@@ -1,34 +1,22 @@
 # todo-open-git-sync
 
-Standalone example sync plugin for `todo-open`.
+Minimal external sync plugin example for `todo-open`.
 
-This project lives outside the main `todo-open` repo and provides a minimal plugin binary named `todoopen-plugin-sync-git`.
+It provides one plugin binary: `todoopen-plugin-sync-git`.
 
-## What it does
+## Install globally (mise)
 
-- Implements the runtime plugin handshake for a `sync` adapter named `git`.
-- Exposes required capabilities: `pull`, `push`, `status`.
-- Returns stubbed responses for `status`, `push`, and `pull` requests.
-
-> This is an example scaffold (not a production git sync engine).
-
-## Build
+Use mise's Go backend to install the command from module source:
 
 ```bash
-go build -o bin/todoopen-plugin-sync-git ./cmd/todoopen-plugin-sync-git
+mise use -g go:github.com/justEstif/todo-open-git-sync/cmd/todoopen-plugin-sync-git@latest
 ```
 
-## Run (manual)
+That installs `todoopen-plugin-sync-git` onto your PATH via mise shims.
 
-```bash
-./bin/todoopen-plugin-sync-git
-```
+## Register in a workspace
 
-The plugin writes a JSON handshake line to stdout and then serves newline-delimited JSON requests on stdin.
-
-## Use with todo-open
-
-Add plugin registration to your workspace `.todoopen/meta.json`:
+Edit `.todoopen/meta.json`:
 
 ```json
 {
@@ -36,18 +24,19 @@ Add plugin registration to your workspace `.todoopen/meta.json`:
   "schema_version": "todo.open.task.v1",
   "enabled_sync_adapters": ["noop", "git"],
   "adapter_plugins": [
-    {
-      "name": "git",
-      "kind": "sync",
-      "command": "/absolute/path/to/todo-open-git-sync/bin/todoopen-plugin-sync-git"
-    }
+    {"name": "git", "kind": "sync", "command": "todoopen-plugin-sync-git"}
   ]
 }
 ```
 
-Then inspect status with:
+## Verify
 
 ```bash
 todoopen adapters --workspace /path/to/workspace --json
 ```
-# todo-open-git-sync
+
+Expected: a `sync` adapter named `git` with `source: plugin`.
+
+---
+
+This is a scaffold for plugin wiring and handshake behavior, not a production git sync engine.
